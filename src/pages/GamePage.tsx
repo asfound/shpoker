@@ -44,7 +44,7 @@ export default function GamePage() {
         </div>
         <div className="text-right">
           <div className="text-sm text-muted-foreground">Pot</div>
-          <div className="text-xl font-semibold">${totalPot.toFixed(2)}</div>
+          <div className="text-xl font-semibold">${Math.round(totalPot)}</div>
         </div>
       </div>
 

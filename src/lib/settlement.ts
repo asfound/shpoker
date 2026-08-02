@@ -8,14 +8,14 @@ export function computeNet(game: Game): Record<string, number> {
       .filter((b) => b.playerId === player.id)
       .reduce((sum, b) => sum + b.amount, 0);
     const chips = game.finalChips[player.id] ?? 0;
-    net[player.id] = chips * game.chipValue - buyIns;
+    net[player.id] = Math.round(chips * game.chipValue - buyIns);
   }
   return net;
 }
 
 /** Greedy min-transfer settlement: match biggest debtor with biggest creditor. */
 export function computeTransfers(net: Record<string, number>): Transfer[] {
-  const EPSILON = 0.005;
+  const EPSILON = 0.5;
   const balances = Object.entries(net)
     .map(([playerId, amount]) => ({ playerId, amount }))
     .filter((b) => Math.abs(b.amount) > EPSILON);
@@ -41,7 +41,7 @@ export function computeTransfers(net: Record<string, number>): Transfer[] {
     transfers.push({
       fromPlayerId: debtor.playerId,
       toPlayerId: creditor.playerId,
-      amount: Math.round(amount * 100) / 100,
+      amount: Math.round(amount),
     });
 
     debtor.amount += amount;

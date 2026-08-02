@@ -23,7 +23,9 @@ export function PlayerRow({ gameId, player, chipValue }: PlayerRowProps) {
   const addBuyIn = useGameStore((s) => s.addBuyIn);
   const removeBuyIn = useGameStore((s) => s.removeBuyIn);
 
-  const [amount, setAmount] = useState(() => (chipValue * 100).toFixed(2));
+  const [amount, setAmount] = useState(() =>
+    String(Math.round(chipValue * 100)),
+  );
 
   const total = buyIns.reduce((sum, b) => sum + b.amount, 0);
   const numericAmount = Number(amount) || 0;
@@ -45,7 +47,7 @@ export function PlayerRow({ gameId, player, chipValue }: PlayerRowProps) {
           <div className="font-medium">{player.name}</div>
           <div className="text-sm text-muted-foreground">
             {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · $
-            {total.toFixed(2)}
+            {Math.round(total)}
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -61,8 +63,8 @@ export function PlayerRow({ gameId, player, chipValue }: PlayerRowProps) {
           </Button>
           <Input
             type="number"
-            inputMode="decimal"
-            step="0.01"
+            inputMode="numeric"
+            step="1"
             min="0"
             aria-label={`Buy-in amount for ${player.name}`}
             className="w-20 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
