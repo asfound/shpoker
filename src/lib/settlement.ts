@@ -32,8 +32,10 @@ export function computeTransfers(net: Record<string, number>): Transfer[] {
   let j = 0;
 
   while (i < debtors.length && j < creditors.length) {
-    const debtor = debtors[i]!;
-    const creditor = creditors[j]!;
+    const debtor = debtors[i];
+    const creditor = creditors[j];
+    if (!debtor || !creditor) break;
+
     const amount = Math.min(-debtor.amount, creditor.amount);
 
     transfers.push({
