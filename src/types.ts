@@ -16,6 +16,7 @@ export interface Game {
   id: string;
   name: string;
   chipValue: number;
+  defaultBuyIn: number;
   status: GameStatus;
   players: Player[];
   buyIns: BuyIn[];

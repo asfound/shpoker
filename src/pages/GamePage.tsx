@@ -4,12 +4,14 @@ import { useGameStore } from '@/store/gameStore';
 import { PlayerRow } from '@/components/PlayerRow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const game = useGameStore((s) => s.games.find((g) => g.id === gameId));
   const addPlayer = useGameStore((s) => s.addPlayer);
+  const setDefaultBuyIn = useGameStore((s) => s.setDefaultBuyIn);
 
   const [newPlayerName, setNewPlayerName] = useState('');
 
@@ -25,6 +27,7 @@ export default function GamePage() {
   }
 
   const totalPot = game.buyIns.reduce((sum, b) => sum + b.amount, 0);
+  const defaultBuyIn = game.defaultBuyIn ?? Math.round(game.chipValue * 100);
 
   function handleAddPlayer() {
     const trimmed = newPlayerName.trim();
@@ -60,13 +63,31 @@ export default function GamePage() {
         </Button>
       </div>
 
+      <div className="flex items-center justify-between gap-3">
+        <Label htmlFor="default-buy-in" className="text-sm">
+          Default buy-in (€)
+        </Label>
+        <Input
+          id="default-buy-in"
+          type="number"
+          inputMode="numeric"
+          step="1"
+          min="0"
+          className="w-20 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          value={defaultBuyIn}
+          onChange={(e) =>
+            setDefaultBuyIn(game.id, Math.round(Number(e.target.value)) || 0)
+          }
+        />
+      </div>
+
       <div className="flex flex-col gap-3">
         {game.players.map((player) => (
           <PlayerRow
             key={player.id}
             gameId={game.id}
             player={player}
-            chipValue={game.chipValue}
+            defaultBuyIn={defaultBuyIn}
           />
         ))}
         {game.players.length === 0 && (

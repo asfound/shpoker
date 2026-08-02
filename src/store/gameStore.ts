@@ -14,6 +14,8 @@ interface GameStore {
   deleteGame: (gameId: string) => void;
   setActiveGame: (gameId: string | null) => void;
 
+  setDefaultBuyIn: (gameId: string, amount: number) => void;
+
   addPlayer: (gameId: string, name: string) => void;
   removePlayer: (gameId: string, playerId: string) => void;
 
@@ -36,6 +38,7 @@ export const useGameStore = create<GameStore>()(
           id,
           name,
           chipValue,
+          defaultBuyIn: Math.round(chipValue * 100),
           status: 'active',
           players: [],
           buyIns: [],
@@ -54,6 +57,13 @@ export const useGameStore = create<GameStore>()(
         })),
 
       setActiveGame: (gameId) => set({ activeGameId: gameId }),
+
+      setDefaultBuyIn: (gameId, amount) =>
+        set((state) => ({
+          games: state.games.map((g) =>
+            g.id === gameId ? { ...g, defaultBuyIn: amount } : g,
+          ),
+        })),
 
       addPlayer: (gameId, name) =>
         set((state) => ({
