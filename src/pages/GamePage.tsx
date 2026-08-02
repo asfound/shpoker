@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
-import { useGameStore } from '@/store/gameStore'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
+import { useState } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useGameStore } from '@/store/gameStore';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function GamePage() {
-  const { gameId } = useParams<{ gameId: string }>()
-  const navigate = useNavigate()
-  const game = useGameStore((s) => s.games.find((g) => g.id === gameId))
-  const addPlayer = useGameStore((s) => s.addPlayer)
-  const addBuyIn = useGameStore((s) => s.addBuyIn)
+  const { gameId } = useParams<{ gameId: string }>();
+  const navigate = useNavigate();
+  const game = useGameStore((s) => s.games.find((g) => g.id === gameId));
+  const addPlayer = useGameStore((s) => s.addPlayer);
+  const addBuyIn = useGameStore((s) => s.addBuyIn);
 
-  const [newPlayerName, setNewPlayerName] = useState('')
+  const [newPlayerName, setNewPlayerName] = useState('');
 
   if (!game) {
     return (
@@ -22,17 +22,17 @@ export default function GamePage() {
           Back home
         </Link>
       </div>
-    )
+    );
   }
 
-  const totalPot = game.buyIns.reduce((sum, b) => sum + b.amount, 0)
-  const defaultBuyIn = game.chipValue * 100
+  const totalPot = game.buyIns.reduce((sum, b) => sum + b.amount, 0);
+  const defaultBuyIn = game.chipValue * 100;
 
   function handleAddPlayer() {
-    const trimmed = newPlayerName.trim()
-    if (!trimmed) return
-    addPlayer(game!.id, trimmed)
-    setNewPlayerName('')
+    const trimmed = newPlayerName.trim();
+    if (!trimmed) return;
+    addPlayer(game!.id, trimmed);
+    setNewPlayerName('');
   }
 
   return (
@@ -64,8 +64,8 @@ export default function GamePage() {
 
       <div className="flex flex-col gap-3">
         {game.players.map((player) => {
-          const buyIns = game.buyIns.filter((b) => b.playerId === player.id)
-          const total = buyIns.reduce((sum, b) => sum + b.amount, 0)
+          const buyIns = game.buyIns.filter((b) => b.playerId === player.id);
+          const total = buyIns.reduce((sum, b) => sum + b.amount, 0);
           return (
             <Card key={player.id}>
               <CardContent className="flex items-center justify-between py-3">
@@ -85,18 +85,23 @@ export default function GamePage() {
                 </Button>
               </CardContent>
             </Card>
-          )
+          );
         })}
         {game.players.length === 0 && (
-          <p className="text-sm text-muted-foreground">Add players to get started.</p>
+          <p className="text-sm text-muted-foreground">
+            Add players to get started.
+          </p>
         )}
       </div>
 
       {game.players.length > 0 && (
-        <Button onClick={() => navigate(`/game/${game.id}/settle`)} variant="secondary">
+        <Button
+          onClick={() => navigate(`/game/${game.id}/settle`)}
+          variant="secondary"
+        >
           End game & settle up
         </Button>
       )}
     </div>
-  )
+  );
 }

@@ -1,27 +1,27 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import type { Game } from '@/types'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { Game } from '@/types';
 
 function makeId(): string {
-  return crypto.randomUUID()
+  return crypto.randomUUID();
 }
 
 interface GameStore {
-  games: Game[]
-  activeGameId: string | null
+  games: Game[];
+  activeGameId: string | null;
 
-  createGame: (name: string, chipValue: number) => string
-  deleteGame: (gameId: string) => void
-  setActiveGame: (gameId: string | null) => void
+  createGame: (name: string, chipValue: number) => string;
+  deleteGame: (gameId: string) => void;
+  setActiveGame: (gameId: string | null) => void;
 
-  addPlayer: (gameId: string, name: string) => void
-  removePlayer: (gameId: string, playerId: string) => void
+  addPlayer: (gameId: string, name: string) => void;
+  removePlayer: (gameId: string, playerId: string) => void;
 
-  addBuyIn: (gameId: string, playerId: string, amount: number) => void
-  removeBuyIn: (gameId: string, buyInId: string) => void
+  addBuyIn: (gameId: string, playerId: string, amount: number) => void;
+  removeBuyIn: (gameId: string, buyInId: string) => void;
 
-  setFinalChips: (gameId: string, playerId: string, chips: number) => void
-  settleGame: (gameId: string) => void
+  setFinalChips: (gameId: string, playerId: string, chips: number) => void;
+  settleGame: (gameId: string) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -31,7 +31,7 @@ export const useGameStore = create<GameStore>()(
       activeGameId: null,
 
       createGame: (name, chipValue) => {
-        const id = makeId()
+        const id = makeId();
         const game: Game = {
           id,
           name,
@@ -41,15 +41,16 @@ export const useGameStore = create<GameStore>()(
           buyIns: [],
           finalChips: {},
           createdAt: Date.now(),
-        }
-        set((state) => ({ games: [...state.games, game], activeGameId: id }))
-        return id
+        };
+        set((state) => ({ games: [...state.games, game], activeGameId: id }));
+        return id;
       },
 
       deleteGame: (gameId) =>
         set((state) => ({
           games: state.games.filter((g) => g.id !== gameId),
-          activeGameId: state.activeGameId === gameId ? null : state.activeGameId,
+          activeGameId:
+            state.activeGameId === gameId ? null : state.activeGameId,
         })),
 
       setActiveGame: (gameId) => set({ activeGameId: gameId }),
@@ -59,7 +60,7 @@ export const useGameStore = create<GameStore>()(
           games: state.games.map((g) =>
             g.id === gameId
               ? { ...g, players: [...g.players, { id: makeId(), name }] }
-              : g
+              : g,
           ),
         })),
 
@@ -72,7 +73,7 @@ export const useGameStore = create<GameStore>()(
                   players: g.players.filter((p) => p.id !== playerId),
                   buyIns: g.buyIns.filter((b) => b.playerId !== playerId),
                 }
-              : g
+              : g,
           ),
         })),
 
@@ -87,7 +88,7 @@ export const useGameStore = create<GameStore>()(
                     { id: makeId(), playerId, amount, createdAt: Date.now() },
                   ],
                 }
-              : g
+              : g,
           ),
         })),
 
@@ -96,7 +97,7 @@ export const useGameStore = create<GameStore>()(
           games: state.games.map((g) =>
             g.id === gameId
               ? { ...g, buyIns: g.buyIns.filter((b) => b.id !== buyInId) }
-              : g
+              : g,
           ),
         })),
 
@@ -105,17 +106,17 @@ export const useGameStore = create<GameStore>()(
           games: state.games.map((g) =>
             g.id === gameId
               ? { ...g, finalChips: { ...g.finalChips, [playerId]: chips } }
-              : g
+              : g,
           ),
         })),
 
       settleGame: (gameId) =>
         set((state) => ({
           games: state.games.map((g) =>
-            g.id === gameId ? { ...g, status: 'settled' } : g
+            g.id === gameId ? { ...g, status: 'settled' } : g,
           ),
         })),
     }),
-    { name: 'shpoker-storage' }
-  )
-)
+    { name: 'shpoker-storage' },
+  ),
+);

@@ -1,7 +1,7 @@
-import { Routes, Route } from 'react-router-dom'
-import Home from '@/pages/Home'
-import GamePage from '@/pages/GamePage'
-import SettleUp from '@/pages/SettleUp'
+import { Routes, Route } from 'react-router-dom';
+import Home from '@/pages/Home';
+import GamePage from '@/pages/GamePage';
+import SettleUp from '@/pages/SettleUp';
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route path="/game/:gameId/settle" element={<SettleUp />} />
       </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

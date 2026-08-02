@@ -1,26 +1,26 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useGameStore } from '@/store/gameStore'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useGameStore } from '@/store/gameStore';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
-  const navigate = useNavigate()
-  const games = useGameStore((s) => s.games)
-  const createGame = useGameStore((s) => s.createGame)
+  const navigate = useNavigate();
+  const games = useGameStore((s) => s.games);
+  const createGame = useGameStore((s) => s.createGame);
 
-  const [name, setName] = useState('')
-  const [chipValue, setChipValue] = useState('0.10')
+  const [name, setName] = useState('');
+  const [chipValue, setChipValue] = useState('0.10');
 
   function handleCreate() {
-    const trimmed = name.trim()
-    if (!trimmed) return
-    const value = Number(chipValue)
-    if (!Number.isFinite(value) || value <= 0) return
-    const id = createGame(trimmed, value)
-    navigate(`/game/${id}`)
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const value = Number(chipValue);
+    if (!Number.isFinite(value) || value <= 0) return;
+    const id = createGame(trimmed, value);
+    navigate(`/game/${id}`);
   }
 
   return (
@@ -73,12 +73,14 @@ export default function Home() {
               >
                 <span className="font-medium">{game.name}</span>
                 <span className="text-sm text-muted-foreground">
-                  {game.status === 'settled' ? 'Settled' : `${game.players.length} players`}
+                  {game.status === 'settled'
+                    ? 'Settled'
+                    : `${game.players.length} players`}
                 </span>
               </button>
             ))}
         </div>
       )}
     </div>
-  )
+  );
 }
