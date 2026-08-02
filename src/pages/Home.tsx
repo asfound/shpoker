@@ -42,7 +42,7 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="chip-value">Chip value ($)</Label>
+            <Label htmlFor="chip-value">Chip value (€)</Label>
             <Input
               id="chip-value"
               type="number"

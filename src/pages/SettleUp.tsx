@@ -92,7 +92,7 @@ export default function SettleUp() {
                 <span>
                   {playerName(t.fromPlayerId)} → {playerName(t.toPlayerId)}
                 </span>
-                <span className="font-medium">${t.amount}</span>
+                <span className="font-medium">€{t.amount}</span>
               </div>
             ))}
           </CardContent>

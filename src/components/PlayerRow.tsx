@@ -46,7 +46,7 @@ export function PlayerRow({ gameId, player, chipValue }: PlayerRowProps) {
         <div>
           <div className="font-medium">{player.name}</div>
           <div className="text-sm text-muted-foreground">
-            {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · $
+            {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · €
             {Math.round(total)}
           </div>
         </div>
