@@ -13,13 +13,16 @@ export default function Home() {
 
   const [name, setName] = useState('');
   const [chipValue, setChipValue] = useState('0.10');
+  const [defaultBuyIn, setDefaultBuyIn] = useState('10');
 
   function handleCreate() {
     const trimmed = name.trim();
     if (!trimmed) return;
     const value = Number(chipValue);
     if (!Number.isFinite(value) || value <= 0) return;
-    const id = createGame(trimmed, value);
+    const buyIn = Math.round(Number(defaultBuyIn));
+    if (!Number.isFinite(buyIn) || buyIn <= 0) return;
+    const id = createGame(trimmed, value, buyIn);
     navigate(`/game/${id}`);
   }
 
@@ -51,6 +54,18 @@ export default function Home() {
               min="0"
               value={chipValue}
               onChange={(e) => setChipValue(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="default-buy-in">Default buy-in (€)</Label>
+            <Input
+              id="default-buy-in"
+              type="number"
+              inputMode="numeric"
+              step="1"
+              min="0"
+              value={defaultBuyIn}
+              onChange={(e) => setDefaultBuyIn(e.target.value)}
             />
           </div>
           <Button onClick={handleCreate} disabled={!name.trim()}>
