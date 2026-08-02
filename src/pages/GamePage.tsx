@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
+import { PlayerRow } from '@/components/PlayerRow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 
 export default function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const game = useGameStore((s) => s.games.find((g) => g.id === gameId));
   const addPlayer = useGameStore((s) => s.addPlayer);
-  const addBuyIn = useGameStore((s) => s.addBuyIn);
 
   const [newPlayerName, setNewPlayerName] = useState('');
 
@@ -26,7 +25,6 @@ export default function GamePage() {
   }
 
   const totalPot = game.buyIns.reduce((sum, b) => sum + b.amount, 0);
-  const defaultBuyIn = game.chipValue * 100;
 
   function handleAddPlayer() {
     const trimmed = newPlayerName.trim();
@@ -63,30 +61,14 @@ export default function GamePage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {game.players.map((player) => {
-          const buyIns = game.buyIns.filter((b) => b.playerId === player.id);
-          const total = buyIns.reduce((sum, b) => sum + b.amount, 0);
-          return (
-            <Card key={player.id}>
-              <CardContent className="flex items-center justify-between py-3">
-                <div>
-                  <div className="font-medium">{player.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · $
-                    {total.toFixed(2)}
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addBuyIn(game.id, player.id, defaultBuyIn)}
-                >
-                  +${defaultBuyIn.toFixed(2)} buy-in
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {game.players.map((player) => (
+          <PlayerRow
+            key={player.id}
+            gameId={game.id}
+            player={player}
+            chipValue={game.chipValue}
+          />
+        ))}
         {game.players.length === 0 && (
           <p className="text-sm text-muted-foreground">
             Add players to get started.
