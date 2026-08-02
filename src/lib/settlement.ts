@@ -19,30 +19,63 @@ export function computeNet(game: Game): Record<string, number> {
   return net;
 }
 
-/** Greedy min-transfer settlement: match biggest debtor with biggest creditor. */
+interface Balance {
+  playerId: string;
+  amount: number;
+}
+
+/**
+ * Settlement that favors giving each player a single transfer over
+ * minimizing the total transfer count. Pass 1 pairs off debtors and
+ * creditors with matching amounts one-to-one (each side settled in
+ * one transfer). Pass 2 greedily clears whatever couldn't be paired
+ * exactly, which is where a player can end up with more than one
+ * transfer.
+ */
 export function computeTransfers(net: Record<string, number>): Transfer[] {
   const EPSILON = 0.5;
-  const balances = Object.entries(net)
-    .map(([playerId, amount]) => ({ playerId, amount }))
-    .filter((b) => Math.abs(b.amount) > EPSILON);
 
-  const debtors = balances
-    .filter((b) => b.amount < 0)
-    .sort((a, b) => a.amount - b.amount);
-  const creditors = balances
-    .filter((b) => b.amount > 0)
-    .sort((a, b) => b.amount - a.amount);
+  const debtors: Balance[] = Object.entries(net)
+    .filter(([, amount]) => amount < -EPSILON)
+    .map(([playerId, amount]) => ({ playerId, amount: -amount }));
+  const creditors: Balance[] = Object.entries(net)
+    .filter(([, amount]) => amount > EPSILON)
+    .map(([playerId, amount]) => ({ playerId, amount }));
 
   const transfers: Transfer[] = [];
+
+  for (const debtor of debtors) {
+    const match = creditors.find(
+      (c) =>
+        c.amount > EPSILON && Math.abs(c.amount - debtor.amount) <= EPSILON,
+    );
+    if (!match) continue;
+
+    transfers.push({
+      fromPlayerId: debtor.playerId,
+      toPlayerId: match.playerId,
+      amount: Math.round(debtor.amount),
+    });
+    debtor.amount = 0;
+    match.amount = 0;
+  }
+
+  const remainingDebtors = debtors
+    .filter((d) => d.amount > EPSILON)
+    .sort((a, b) => b.amount - a.amount);
+  const remainingCreditors = creditors
+    .filter((c) => c.amount > EPSILON)
+    .sort((a, b) => b.amount - a.amount);
+
   let i = 0;
   let j = 0;
 
-  while (i < debtors.length && j < creditors.length) {
-    const debtor = debtors[i];
-    const creditor = creditors[j];
+  while (i < remainingDebtors.length && j < remainingCreditors.length) {
+    const debtor = remainingDebtors[i];
+    const creditor = remainingCreditors[j];
     if (!debtor || !creditor) break;
 
-    const amount = Math.min(-debtor.amount, creditor.amount);
+    const amount = Math.min(debtor.amount, creditor.amount);
 
     transfers.push({
       fromPlayerId: debtor.playerId,
@@ -50,11 +83,11 @@ export function computeTransfers(net: Record<string, number>): Transfer[] {
       amount: Math.round(amount),
     });
 
-    debtor.amount += amount;
+    debtor.amount -= amount;
     creditor.amount -= amount;
 
-    if (Math.abs(debtor.amount) < EPSILON) i++;
-    if (Math.abs(creditor.amount) < EPSILON) j++;
+    if (debtor.amount <= EPSILON) i++;
+    if (creditor.amount <= EPSILON) j++;
   }
 
   return transfers;
