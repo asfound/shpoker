@@ -1,19 +1,39 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
 import { useGameStore } from '@/store/gameStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function Home() {
   const navigate = useNavigate();
   const games = useGameStore((s) => s.games);
   const createGame = useGameStore((s) => s.createGame);
+  const deleteGame = useGameStore((s) => s.deleteGame);
 
   const [name, setName] = useState('');
   const [chipValue, setChipValue] = useState('0.10');
   const [defaultBuyIn, setDefaultBuyIn] = useState('10');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const pendingDeleteGame = games.find((g) => g.id === pendingDeleteId);
+
+  function handleConfirmDelete() {
+    if (pendingDeleteId) deleteGame(pendingDeleteId);
+    setPendingDeleteId(null);
+  }
 
   function handleCreate() {
     const trimmed = name.trim();
@@ -81,21 +101,58 @@ export default function Home() {
             .slice()
             .sort((a, b) => b.createdAt - a.createdAt)
             .map((game) => (
-              <button
+              <div
                 key={game.id}
-                onClick={() => navigate(`/game/${game.id}`)}
-                className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3"
               >
-                <span className="font-medium">{game.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  {game.status === 'settled'
-                    ? 'Settled'
-                    : `${game.players.length} players`}
-                </span>
-              </button>
+                <button
+                  onClick={() => navigate(`/game/${game.id}`)}
+                  className="flex flex-1 items-center justify-between text-left"
+                >
+                  <span className="font-medium">{game.name}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {game.status === 'settled'
+                      ? 'Settled'
+                      : `${game.players.length} players`}
+                  </span>
+                </button>
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={() => setPendingDeleteId(game.id)}
+                  aria-label={`Delete ${game.name}`}
+                >
+                  <Trash2 />
+                </Button>
+              </div>
             ))}
         </div>
       )}
+
+      <AlertDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => !open && setPendingDeleteId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete game?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes "{pendingDeleteGame?.name}" and all its
+              buy-in history. This can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleConfirmDelete}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

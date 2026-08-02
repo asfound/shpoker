@@ -52,6 +52,7 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const numericAmount = Number(amount) || 0;
+  const total = buyIns.reduce((sum, b) => sum + b.amount, 0);
   const lastBuyIn = buyIns[buyIns.length - 1];
   const recentFirst = useMemo(() => [...buyIns].reverse(), [buyIns]);
 
@@ -72,7 +73,8 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
           <div>
             <div className="font-medium">{player.name}</div>
             <div className="text-sm text-muted-foreground">
-              {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'}
+              {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · €
+              {Math.round(total)}
             </div>
           </div>
           <div className="flex items-center gap-2">
