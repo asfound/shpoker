@@ -15,6 +15,13 @@ interface PlayerSettleRowProps {
 
 export function PlayerSettleRow({ gameId, player }: PlayerSettleRowProps) {
   const setFinalEntry = useGameStore((s) => s.setFinalEntry);
+  const buyInsTotal = useGameStore(
+    (s) =>
+      s.games
+        .find((g) => g.id === gameId)
+        ?.buyIns.filter((b) => b.playerId === player.id)
+        .reduce((sum, b) => sum + b.amount, 0) ?? 0,
+  );
   const storedEntry = useGameStore.getState().games.find((g) => g.id === gameId)
     ?.finalEntries[player.id];
 
@@ -55,12 +62,27 @@ export function PlayerSettleRow({ gameId, player }: PlayerSettleRowProps) {
   }
 
   const chipsTotal = computeChipsAmount(chips);
+  const finalAmount = mode === 'amount' ? Number(amount) || 0 : chipsTotal;
+  const diff = Math.round(finalAmount - buyInsTotal);
 
   return (
     <Card>
       <CardContent className="flex flex-col gap-3 py-3">
         <div className="flex items-center justify-between gap-3">
-          <div className="font-medium">{player.name}</div>
+          <div>
+            <div className="font-medium">{player.name}</div>
+            <div
+              className={
+                diff > 0
+                  ? 'text-sm font-medium text-green-600 dark:text-green-500'
+                  : diff < 0
+                    ? 'text-sm font-medium text-red-600 dark:text-red-500'
+                    : 'text-sm text-muted-foreground'
+              }
+            >
+              {diff > 0 ? '+' : ''}€{diff}
+            </div>
+          </div>
           <RadioGroup
             value={mode}
             onValueChange={(value) =>

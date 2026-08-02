@@ -33,6 +33,10 @@ export default function SettleUp() {
     (p) => game.finalEntries[p.id] !== undefined,
   );
 
+  const pot = game.buyIns.reduce((sum, b) => sum + b.amount, 0);
+  const totalDiff = Object.values(net).reduce((sum, n) => sum + n, 0);
+  const potMismatch = allEntered && Math.abs(totalDiff) > 0.5;
+
   function handleSettle() {
     settleGame(game!.id);
     navigate('/');
@@ -55,6 +59,14 @@ export default function SettleUp() {
           <PlayerSettleRow key={player.id} gameId={game.id} player={player} />
         ))}
       </div>
+
+      {potMismatch && (
+        <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          Totals don't match the pot: entered stacks add up to €
+          {Math.round(pot + totalDiff)}, but the pot is €{Math.round(pot)}.
+          Double-check the final amounts.
+        </div>
+      )}
 
       {allEntered && (
         <Card>
