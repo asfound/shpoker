@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Game } from '@/types';
+import type { FinalEntry, Game } from '@/types';
 
 function makeId(): string {
   return crypto.randomUUID();
@@ -20,7 +20,7 @@ interface GameStore {
   addBuyIn: (gameId: string, playerId: string, amount: number) => void;
   removeBuyIn: (gameId: string, buyInId: string) => void;
 
-  setFinalChips: (gameId: string, playerId: string, chips: number) => void;
+  setFinalEntry: (gameId: string, playerId: string, entry: FinalEntry) => void;
   settleGame: (gameId: string) => void;
 }
 
@@ -40,7 +40,7 @@ export const useGameStore = create<GameStore>()(
           status: 'active',
           players: [],
           buyIns: [],
-          finalChips: {},
+          finalEntries: {},
           createdAt: Date.now(),
         };
         set((state) => ({ games: [...state.games, game], activeGameId: id }));
@@ -102,11 +102,14 @@ export const useGameStore = create<GameStore>()(
           ),
         })),
 
-      setFinalChips: (gameId, playerId, chips) =>
+      setFinalEntry: (gameId, playerId, entry) =>
         set((state) => ({
           games: state.games.map((g) =>
             g.id === gameId
-              ? { ...g, finalChips: { ...g.finalChips, [playerId]: chips } }
+              ? {
+                  ...g,
+                  finalEntries: { ...g.finalEntries, [playerId]: entry },
+                }
               : g,
           ),
         })),

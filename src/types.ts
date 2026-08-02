@@ -1,7 +1,13 @@
+import type { ChipCounts } from '@/lib/chips';
+
 export interface Player {
   id: string;
   name: string;
 }
+
+export type FinalEntry =
+  | { mode: 'amount'; amount: number }
+  | { mode: 'chips'; chips: ChipCounts };
 
 export interface BuyIn {
   id: string;
@@ -20,7 +26,7 @@ export interface Game {
   status: GameStatus;
   players: Player[];
   buyIns: BuyIn[];
-  finalChips: Record<string, number>;
+  finalEntries: Record<string, FinalEntry>;
   createdAt: number;
 }
 

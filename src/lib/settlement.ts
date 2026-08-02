@@ -1,14 +1,20 @@
+import { computeChipsAmount } from '@/lib/chips';
 import type { Game, Transfer } from '@/types';
 
-/** Net result per player in currency: final chip value minus total buy-ins. */
+/** Net result per player in currency: final stack value minus total buy-ins. */
 export function computeNet(game: Game): Record<string, number> {
   const net: Record<string, number> = {};
   for (const player of game.players) {
     const buyIns = game.buyIns
       .filter((b) => b.playerId === player.id)
       .reduce((sum, b) => sum + b.amount, 0);
-    const chips = game.finalChips[player.id] ?? 0;
-    net[player.id] = Math.round(chips * game.chipValue - buyIns);
+    const entry = game.finalEntries[player.id];
+    const finalAmount = entry
+      ? entry.mode === 'amount'
+        ? entry.amount
+        : computeChipsAmount(entry.chips)
+      : 0;
+    net[player.id] = Math.round(finalAmount - buyIns);
   }
   return net;
 }
