@@ -70,7 +70,12 @@ export function PlayerSettleRow({ gameId, player }: PlayerSettleRowProps) {
       <CardContent className="flex flex-col gap-3 py-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="font-medium">{player.name}</div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{player.name}</span>
+              <span className="text-xs text-muted-foreground">
+                bought in €{Math.round(buyInsTotal)}
+              </span>
+            </div>
             <div
               className={
                 diff > 0
