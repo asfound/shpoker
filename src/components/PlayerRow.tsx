@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { useGameStore } from '@/store/gameStore';
 import type { Player } from '@/types';
@@ -13,11 +13,12 @@ interface PlayerRowProps {
 }
 
 export function PlayerRow({ gameId, player, chipValue }: PlayerRowProps) {
-  const buyIns = useGameStore(
-    (s) =>
-      s.games
-        .find((g) => g.id === gameId)
-        ?.buyIns.filter((b) => b.playerId === player.id) ?? [],
+  const gameBuyIns = useGameStore(
+    (s) => s.games.find((g) => g.id === gameId)?.buyIns,
+  );
+  const buyIns = useMemo(
+    () => gameBuyIns?.filter((b) => b.playerId === player.id) ?? [],
+    [gameBuyIns, player.id],
   );
   const addBuyIn = useGameStore((s) => s.addBuyIn);
   const removeBuyIn = useGameStore((s) => s.removeBuyIn);
@@ -64,7 +65,7 @@ export function PlayerRow({ gameId, player, chipValue }: PlayerRowProps) {
             step="0.01"
             min="0"
             aria-label={`Buy-in amount for ${player.name}`}
-            className="w-20 text-center"
+            className="w-20 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
