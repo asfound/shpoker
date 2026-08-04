@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { findGame, useGameStore } from '@/store/gameStore';
-import { PlayerRow } from '@/components/PlayerRow';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BackIcon } from '@/components/icons';
+import { PlayerRow } from '@/components/PlayerRow';
+import { findGame, useGameStore } from '@/store/gameStore';
 
 export default function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();

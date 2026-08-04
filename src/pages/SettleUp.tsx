@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { findGame, useGameStore } from '@/store/gameStore';
-import { computeNet, computeTransfers } from '@/lib/settlement';
-import { PlayerSettleRow } from '@/components/PlayerSettleRow';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BackIcon, WarningIcon } from '@/components/icons';
+import { PlayerSettleRow } from '@/components/PlayerSettleRow';
+import { computeNet, computeTransfers } from '@/lib/settlement';
+import { findGame, useGameStore } from '@/store/gameStore';
 
 export default function SettleUp() {
   const { gameId } = useParams<{ gameId: string }>();

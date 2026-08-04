@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGameStore } from '@/store/gameStore';
-import { RingIcon, ArrowRightIcon, TrashIcon } from '@/components/icons';
+import { ArrowRightIcon, RingIcon, TrashIcon } from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useGameStore } from '@/store/gameStore';
 
 function formatDate(ms: number): string {
   return new Date(ms).toLocaleDateString([], {

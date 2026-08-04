@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from '@/pages/Home';
+import { Route, Routes } from 'react-router-dom';
 import GamePage from '@/pages/GamePage';
+import Home from '@/pages/Home';
 import SettleUp from '@/pages/SettleUp';
 
 function App() {

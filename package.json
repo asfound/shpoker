@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
-    "format": "biome format --write .",
+    "format": "biome check --write .",
     "preview": "vite preview",
     "prepare": "husky"
   },
@@ -22,7 +22,7 @@
     "zustand": "^5.0.14"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,md}": "biome format --write",
+    "*.{js,jsx,ts,tsx,json,css,md}": "biome check --write",
     "*.{js,jsx,ts,tsx}": "oxlint --fix"
   },
   "devDependencies": {

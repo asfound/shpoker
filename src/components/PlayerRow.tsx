@@ -1,7 +1,4 @@
 import { useMemo, useState } from 'react';
-import { findGame, useGameStore } from '@/store/gameStore';
-import { toNonNegativeInt } from '@/lib/number';
-import type { Player } from '@/types';
 import { ChevronDownIcon, TrashIcon } from '@/components/icons';
 import {
   AlertDialog,
@@ -14,6 +11,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toNonNegativeInt } from '@/lib/number';
+import { findGame, useGameStore } from '@/store/gameStore';
+import type { Player } from '@/types';
 
 interface PlayerRowProps {
   gameId: string;

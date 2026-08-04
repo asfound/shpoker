@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { findGame, useGameStore } from '@/store/gameStore';
-import { CHIP_DEFS, computeChipsAmount, emptyChipCounts } from '@/lib/chips';
-import type { ChipColor } from '@/lib/chips';
-import { toNonNegativeInt } from '@/lib/number';
-import type { FinalEntry, Player } from '@/types';
 import { ChipIcon } from '@/components/ChipIcon';
+import type { ChipColor } from '@/lib/chips';
+import { CHIP_DEFS, computeChipsAmount, emptyChipCounts } from '@/lib/chips';
+import { toNonNegativeInt } from '@/lib/number';
+import { findGame, useGameStore } from '@/store/gameStore';
+import type { FinalEntry, Player } from '@/types';
 
 interface PlayerSettleRowProps {
   gameId: string;
