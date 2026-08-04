@@ -68,6 +68,6 @@ npm run dev
 
 ## Before committing
 
-Husky runs `lint-staged` (Biome + oxlint) and a full `tsc -b` typecheck on
-every commit; commitlint enforces Conventional Commits on the message. Run
-`npm run test` yourself before pushing — it's not wired into the hook.
+Husky runs `lint-staged` (Biome + oxlint), a full `tsc -b` typecheck, and the
+Vitest suite on every commit; commitlint enforces Conventional Commits on the
+message.
