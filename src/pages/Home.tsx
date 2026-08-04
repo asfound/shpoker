@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useGameStore } from '@/store/gameStore';
+import { findGame, useGameStore } from '@/store/gameStore';
 
 function formatDate(ms: number): string {
   return new Date(ms).toLocaleDateString([], {
@@ -31,7 +31,7 @@ export default function Home() {
   const [defaultBuyIn, setDefaultBuyIn] = useState('10');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
-  const pendingDeleteGame = games.find((g) => g.id === pendingDeleteId);
+  const pendingDeleteGame = findGame(games, pendingDeleteId ?? undefined);
 
   const trimmedName = name.trim();
   const chipValueNumber = Number(chipValue);
@@ -131,50 +131,47 @@ export default function Home() {
       {games.length > 0 && (
         <div className="flex flex-col gap-(--space-2)">
           <h6>Games</h6>
-          {games
-            .slice()
-            .sort((a, b) => b.createdAt - a.createdAt)
-            .map((game) => (
-              <div
-                key={game.id}
-                className="flex items-center gap-(--space-2) rounded-(--radius-md) p-(--space-3)"
-                style={{ background: 'var(--color-surface)' }}
+          {games.map((game) => (
+            <div
+              key={game.id}
+              className="flex items-center gap-(--space-2) rounded-(--radius-md) p-(--space-3)"
+              style={{ background: 'var(--color-surface)' }}
+            >
+              <button
+                type="button"
+                onClick={() => navigate(`/game/${game.id}`)}
+                className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-(--space-2) border-0 bg-transparent p-0 text-left text-(--color-text)"
               >
-                <button
-                  type="button"
-                  onClick={() => navigate(`/game/${game.id}`)}
-                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-(--space-2) border-0 bg-transparent p-0 text-left text-(--color-text)"
-                >
-                  <span className="min-w-0">
-                    <span className="block overflow-hidden text-ellipsis whitespace-nowrap font-medium">
-                      {game.name}
-                    </span>
-                    <span className="text-muted" style={{ fontSize: 11 }}>
-                      {formatDate(game.createdAt)}
-                    </span>
+                <span className="min-w-0">
+                  <span className="block overflow-hidden text-ellipsis whitespace-nowrap font-medium">
+                    {game.name}
                   </span>
-                  <span
-                    className={
-                      game.status === 'settled'
-                        ? 'tag tag-neutral'
-                        : 'tag tag-accent'
-                    }
-                  >
-                    {game.status === 'settled'
-                      ? 'settled'
-                      : `${game.players.length} players`}
+                  <span className="text-muted" style={{ fontSize: 11 }}>
+                    {formatDate(game.createdAt)}
                   </span>
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-icon"
-                  aria-label={`Delete ${game.name}`}
-                  onClick={() => setPendingDeleteId(game.id)}
+                </span>
+                <span
+                  className={
+                    game.status === 'settled'
+                      ? 'tag tag-neutral'
+                      : 'tag tag-accent'
+                  }
                 >
-                  <TrashIcon />
-                </button>
-              </div>
-            ))}
+                  {game.status === 'settled'
+                    ? 'settled'
+                    : `${game.players.length} players`}
+                </span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                aria-label={`Delete ${game.name}`}
+                onClick={() => setPendingDeleteId(game.id)}
+              >
+                <TrashIcon />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 

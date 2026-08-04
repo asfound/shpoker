@@ -117,7 +117,8 @@ export const useGameStore = create<GameStore>()(
       name: 'shpoker-storage',
       version: 1,
       migrate: (persistedState, version) => {
-        const state = persistedState as { games: Game[] };
+        const state = persistedState as { games?: Game[] } | undefined;
+        if (!state?.games) return state;
         if (version < 1) {
           state.games = state.games.map((g) => ({
             ...g,
