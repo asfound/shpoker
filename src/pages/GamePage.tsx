@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { PlayerRow } from '@/components/PlayerRow';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { BackIcon } from '@/components/icons';
 
 export default function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -17,9 +16,7 @@ export default function GamePage() {
     return (
       <div className="flex flex-col gap-4">
         <p>Game not found.</p>
-        <Link to="/" className="underline">
-          Back home
-        </Link>
+        <Link to="/">Back home</Link>
       </div>
     );
   }
@@ -35,33 +32,59 @@ export default function GamePage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+    <>
+      <div className="flex items-start justify-between gap-[var(--space-3)]">
         <div>
-          <Link to="/" className="text-sm text-muted-foreground underline">
+          <Link to="/" className="back-link">
+            <BackIcon />
             Back
           </Link>
-          <h1 className="text-2xl font-semibold">{game.name}</h1>
+          <h1 className="mt-1" style={{ fontSize: 21 }}>
+            {game.name}
+          </h1>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-muted-foreground">Pot</div>
-          <div className="text-xl font-semibold">€{Math.round(totalPot)}</div>
+        <div className="shrink-0 text-right">
+          <div
+            className="text-muted"
+            style={{
+              fontSize: 11,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}
+          >
+            Pot
+          </div>
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 500,
+              fontFamily: 'var(--font-heading)',
+            }}
+          >
+            €{Math.round(totalPot)}
+          </div>
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <Input
+      <div className="flex gap-[var(--space-2)]">
+        <input
+          className="input"
           placeholder="Player name"
           value={newPlayerName}
           onChange={(e) => setNewPlayerName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
         />
-        <Button onClick={handleAddPlayer} disabled={!newPlayerName.trim()}>
+        <button
+          type="button"
+          className="btn btn-secondary shrink-0"
+          onClick={handleAddPlayer}
+          disabled={!newPlayerName.trim()}
+        >
           Add
-        </Button>
+        </button>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-[var(--space-3)]">
         {game.players.map((player) => (
           <PlayerRow
             key={player.id}
@@ -71,20 +94,21 @@ export default function GamePage() {
           />
         ))}
         {game.players.length === 0 && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted" style={{ fontSize: 13 }}>
             Add players to get started.
           </p>
         )}
       </div>
 
       {game.players.length > 0 && (
-        <Button
+        <button
+          type="button"
+          className="btn btn-secondary btn-block"
           onClick={() => navigate(`/game/${game.id}/settle`)}
-          variant="secondary"
         >
-          End game & settle up
-        </Button>
+          End game &amp; settle up
+        </button>
       )}
-    </div>
+    </>
   );
 }

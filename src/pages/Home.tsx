@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trash2 } from 'lucide-react';
 import { useGameStore } from '@/store/gameStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RingIcon, ArrowRightIcon, TrashIcon } from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,27 +43,46 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">shpoker</h1>
+    <>
+      <div className="flex flex-col gap-[var(--space-2)]">
+        <div className="flex items-center gap-2.5">
+          <span
+            className="inline-flex items-center justify-center rounded-full"
+            style={{
+              width: 34,
+              height: 34,
+              background: 'var(--color-surface)',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <RingIcon />
+          </span>
+          <h1 style={{ fontSize: 22 }}>shpoker</h1>
+        </div>
+        <p className="text-muted" style={{ fontSize: 13 }}>
+          Track buy-ins, settle up at the end of the night.
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>New game</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="game-name">Game name</Label>
-            <Input
-              id="game-name"
-              placeholder="Friday night"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="chip-value">Chip value (€)</Label>
-            <Input
+      <div className="card elev-sm gap-[var(--space-3)] p-[var(--space-4)]">
+        <div className="card-kicker">New game</div>
+        <div className="card-title">Start a session</div>
+        <div className="field">
+          <label htmlFor="game-name">Game name</label>
+          <input
+            id="game-name"
+            className="input"
+            placeholder="Friday night"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-[var(--space-3)]">
+          <div className="field">
+            <label htmlFor="chip-value">Chip value (€)</label>
+            <input
               id="chip-value"
+              className="input"
               type="number"
               inputMode="decimal"
               step="0.01"
@@ -76,10 +91,11 @@ export default function Home() {
               onChange={(e) => setChipValue(e.target.value)}
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="default-buy-in">Default buy-in (€)</Label>
-            <Input
+          <div className="field">
+            <label htmlFor="default-buy-in">Default buy-in (€)</label>
+            <input
               id="default-buy-in"
+              className="input"
               type="number"
               inputMode="numeric"
               step="1"
@@ -88,43 +104,58 @@ export default function Home() {
               onChange={(e) => setDefaultBuyIn(e.target.value)}
             />
           </div>
-          <Button onClick={handleCreate} disabled={!name.trim()}>
-            Start game
-          </Button>
-        </CardContent>
-      </Card>
+        </div>
+        <button
+          type="button"
+          className="btn btn-primary btn-block"
+          onClick={handleCreate}
+          disabled={!name.trim()}
+        >
+          Start game
+          <ArrowRightIcon />
+        </button>
+      </div>
 
       {games.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium text-muted-foreground">Games</h2>
+        <div className="flex flex-col gap-[var(--space-2)]">
+          <h6>Games</h6>
           {games
             .slice()
             .sort((a, b) => b.createdAt - a.createdAt)
             .map((game) => (
               <div
                 key={game.id}
-                className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3"
+                className="flex items-center gap-[var(--space-2)] rounded-[var(--radius-md)] p-[var(--space-3)]"
+                style={{ background: 'var(--color-surface)' }}
               >
                 <button
+                  type="button"
                   onClick={() => navigate(`/game/${game.id}`)}
-                  className="flex flex-1 items-center justify-between text-left"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-[var(--space-2)] border-0 bg-transparent p-0 text-left text-[var(--color-text)]"
                 >
-                  <span className="font-medium">{game.name}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap font-medium">
+                    {game.name}
+                  </span>
+                  <span
+                    className={
+                      game.status === 'settled'
+                        ? 'tag tag-neutral'
+                        : 'tag tag-accent'
+                    }
+                  >
                     {game.status === 'settled'
-                      ? 'Settled'
+                      ? 'settled'
                       : `${game.players.length} players`}
                   </span>
                 </button>
-                <Button
+                <button
                   type="button"
-                  size="icon-sm"
-                  variant="ghost"
-                  onClick={() => setPendingDeleteId(game.id)}
+                  className="btn btn-ghost btn-icon"
                   aria-label={`Delete ${game.name}`}
+                  onClick={() => setPendingDeleteId(game.id)}
                 >
-                  <Trash2 />
-                </Button>
+                  <TrashIcon />
+                </button>
               </div>
             ))}
         </div>
@@ -144,15 +175,12 @@ export default function Home() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={handleConfirmDelete}
-            >
+            <AlertDialogAction onClick={handleConfirmDelete}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }

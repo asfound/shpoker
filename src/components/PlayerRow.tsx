@@ -1,16 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Trash2 } from 'lucide-react';
 import { useGameStore } from '@/store/gameStore';
 import type { Player } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { TrashIcon } from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -67,100 +58,98 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
   }
 
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-1 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="font-medium">{player.name}</div>
-            <div className="text-sm text-muted-foreground">
-              {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · €
-              {Math.round(total)}
-            </div>
+    <div className="card elev-sm gap-[var(--space-2)] p-[var(--space-3)]">
+      <div className="flex items-center justify-between gap-[var(--space-3)]">
+        <div className="min-w-0">
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium">
+            {player.name}
           </div>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              inputMode="numeric"
-              step="1"
-              min="0"
-              aria-label={`Buy-in amount for ${player.name}`}
-              className="w-20 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleAdd}
-              disabled={numericAmount <= 0}
-            >
-              Add
-            </Button>
+          <div className="text-muted" style={{ fontSize: 12 }}>
+            {buyIns.length} buy-in{buyIns.length === 1 ? '' : 's'} · €
+            {Math.round(total)}
           </div>
         </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <input
+            className="input text-center"
+            type="number"
+            inputMode="numeric"
+            step="1"
+            min="0"
+            aria-label={`Buy-in amount for ${player.name}`}
+            style={{ width: 76, padding: '6px 4px' }}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleAdd}
+            disabled={numericAmount <= 0}
+          >
+            Add
+          </button>
+        </div>
+      </div>
 
-        {lastBuyIn && (
-          <Accordion>
-            <AccordionItem onOpenChange={setIsLogOpen}>
-              <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
-                {isLogOpen
-                  ? 'Buy-in log'
-                  : `Last: +€${Math.round(lastBuyIn.amount)} · ${formatTime(lastBuyIn.createdAt)}`}
-              </AccordionTrigger>
-              <AccordionContent className="pt-1 pb-0">
-                <ul className="flex flex-col gap-1">
-                  {recentFirst.map((buyIn) => (
-                    <li
-                      key={buyIn.id}
-                      className="flex items-center justify-between text-xs text-muted-foreground"
-                    >
-                      <span>+€{Math.round(buyIn.amount)}</span>
-                      <span>{formatTime(buyIn.createdAt)}</span>
-                    </li>
-                  ))}
-                </ul>
-                <AlertDialog
-                  open={isConfirmOpen}
-                  onOpenChange={setIsConfirmOpen}
+      {lastBuyIn && (
+        <div>
+          <button
+            type="button"
+            className="block cursor-pointer border-0 bg-transparent p-0 text-[var(--color-text)] opacity-60 hover:opacity-100"
+            style={{ fontSize: 12, padding: '4px 0' }}
+            onClick={() => setIsLogOpen((v) => !v)}
+          >
+            {isLogOpen
+              ? 'Buy-in log'
+              : `Last: +€${Math.round(lastBuyIn.amount)} · ${formatTime(lastBuyIn.createdAt)}`}
+          </button>
+          {isLogOpen && (
+            <div className="flex flex-col gap-1 pt-0.5">
+              {recentFirst.map((buyIn) => (
+                <div
+                  key={buyIn.id}
+                  className="flex items-center justify-between opacity-60"
+                  style={{ fontSize: 12 }}
                 >
-                  <AlertDialogTrigger
-                    render={
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        className="mt-2"
-                      >
-                        <Trash2 />
-                        Remove last buy-in
-                      </Button>
-                    }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Remove last buy-in?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This removes {player.name}'s most recent buy-in of €
-                        {Math.round(lastBuyIn.amount)} from{' '}
-                        {formatTime(lastBuyIn.createdAt)}.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        variant="destructive"
-                        onClick={handleRemoveLast}
-                      >
-                        Remove
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        )}
-      </CardContent>
-    </Card>
+                  <span>+€{Math.round(buyIn.amount)}</span>
+                  <span>{formatTime(buyIn.createdAt)}</span>
+                </div>
+              ))}
+              <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                <AlertDialogTrigger
+                  render={
+                    <button
+                      type="button"
+                      className="btn btn-secondary mt-1 self-start"
+                      style={{ fontSize: 12, padding: '5px 10px' }}
+                    >
+                      <TrashIcon size={12} />
+                      Remove last buy-in
+                    </button>
+                  }
+                />
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Remove last buy-in?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This removes {player.name}'s most recent buy-in of €
+                      {Math.round(lastBuyIn.amount)} from{' '}
+                      {formatTime(lastBuyIn.createdAt)}.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRemoveLast}>
+                      Remove
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

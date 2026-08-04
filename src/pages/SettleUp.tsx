@@ -3,8 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { computeNet, computeTransfers } from '@/lib/settlement';
 import { PlayerSettleRow } from '@/components/PlayerSettleRow';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { BackIcon } from '@/components/icons';
 
 export default function SettleUp() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -19,9 +18,7 @@ export default function SettleUp() {
     return (
       <div className="flex flex-col gap-4">
         <p>Game not found.</p>
-        <Link to="/" className="underline">
-          Back home
-        </Link>
+        <Link to="/">Back home</Link>
       </div>
     );
   }
@@ -43,25 +40,33 @@ export default function SettleUp() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <div>
-        <Link
-          to={`/game/${game.id}`}
-          className="text-sm text-muted-foreground underline"
-        >
+        <Link to={`/game/${game.id}`} className="back-link">
+          <BackIcon />
           Back
         </Link>
-        <h1 className="text-2xl font-semibold">Settle up</h1>
+        <h1 className="mt-1" style={{ fontSize: 21 }}>
+          Settle up
+        </h1>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-[var(--space-3)]">
         {game.players.map((player) => (
           <PlayerSettleRow key={player.id} gameId={game.id} player={player} />
         ))}
       </div>
 
       {potMismatch && (
-        <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <div
+          className="rounded-[var(--radius-md)] p-[var(--space-3)]"
+          style={{
+            border: '1px solid var(--color-divider)',
+            background: 'color-mix(in srgb, var(--color-text) 6%, transparent)',
+            fontSize: 13,
+            opacity: 0.85,
+          }}
+        >
           Totals don't match the pot: entered stacks add up to €
           {Math.round(pot + totalDiff)}, but the pot is €{Math.round(pot)}.
           Double-check the final amounts.
@@ -69,30 +74,36 @@ export default function SettleUp() {
       )}
 
       {allEntered && (
-        <Card>
-          <CardContent className="flex flex-col gap-2 py-4">
-            <h2 className="font-medium">Who owes who</h2>
-            {transfers.length === 0 && (
-              <p className="text-sm text-muted-foreground">Everyone's even.</p>
-            )}
-            {transfers.map((t, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between text-sm"
-              >
-                <span>
-                  {playerName(t.fromPlayerId)} → {playerName(t.toPlayerId)}
-                </span>
-                <span className="font-medium">€{t.amount}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <div className="card gap-[var(--space-2)] p-[var(--space-4)]">
+          <h5>Who owes who</h5>
+          {transfers.length === 0 && (
+            <p className="text-muted" style={{ fontSize: 13 }}>
+              Everyone's even.
+            </p>
+          )}
+          {transfers.map((t, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between"
+              style={{ fontSize: 14 }}
+            >
+              <span>
+                {playerName(t.fromPlayerId)} → {playerName(t.toPlayerId)}
+              </span>
+              <span className="font-medium">€{t.amount}</span>
+            </div>
+          ))}
+        </div>
       )}
 
-      <Button onClick={handleSettle} disabled={!allEntered}>
-        Finish & save
-      </Button>
-    </div>
+      <button
+        type="button"
+        className="btn btn-primary btn-block"
+        onClick={handleSettle}
+        disabled={!allEntered}
+      >
+        Finish &amp; save
+      </button>
+    </>
   );
 }

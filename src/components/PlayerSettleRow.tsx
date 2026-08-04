@@ -4,9 +4,6 @@ import { CHIP_DEFS, computeChipsAmount, emptyChipCounts } from '@/lib/chips';
 import type { ChipColor } from '@/lib/chips';
 import type { FinalEntry, Player } from '@/types';
 import { ChipIcon } from '@/components/ChipIcon';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface PlayerSettleRowProps {
   gameId: string;
@@ -64,87 +61,94 @@ export function PlayerSettleRow({ gameId, player }: PlayerSettleRowProps) {
   const chipsTotal = computeChipsAmount(chips);
   const finalAmount = mode === 'amount' ? Number(amount) || 0 : chipsTotal;
   const diff = Math.round(finalAmount - buyInsTotal);
+  const diffLabel =
+    diff > 0 ? `+€${diff}` : diff < 0 ? `−€${Math.abs(diff)}` : '€0';
+  const diffColor =
+    diff > 0
+      ? 'var(--color-accent-300)'
+      : diff < 0
+        ? 'color-mix(in srgb, var(--color-text) 65%, transparent)'
+        : 'color-mix(in srgb, var(--color-text) 55%, transparent)';
+
+  const radioName = `settle-mode-${player.id}`;
 
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-3 py-3">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-medium">{player.name}</span>
-              <span className="text-xs text-muted-foreground">
-                bought in €{Math.round(buyInsTotal)}
-              </span>
-            </div>
-            <div
-              className={
-                diff > 0
-                  ? 'text-sm font-medium text-green-600 dark:text-green-500'
-                  : diff < 0
-                    ? 'text-sm font-medium text-red-600 dark:text-red-500'
-                    : 'text-sm text-muted-foreground'
-              }
-            >
-              {diff > 0 ? '+' : ''}€{diff}
-            </div>
+    <div className="card elev-sm gap-[var(--space-3)] p-[var(--space-3)]">
+      <div className="flex items-start justify-between gap-[var(--space-3)]">
+        <div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-medium">{player.name}</span>
+            <span className="text-muted" style={{ fontSize: 11 }}>
+              bought in €{Math.round(buyInsTotal)}
+            </span>
           </div>
-          <RadioGroup
-            value={mode}
-            onValueChange={(value) =>
-              handleModeChange(value as FinalEntry['mode'])
-            }
-            className="flex w-auto flex-row gap-3"
+          <div
+            className="mt-0.5 font-medium"
+            style={{ fontSize: 14, color: diffColor }}
           >
-            <label className="flex items-center gap-1.5 text-sm">
-              <RadioGroupItem value="amount" />
-              Amount
-            </label>
-            <label className="flex items-center gap-1.5 text-sm">
-              <RadioGroupItem value="chips" />
-              Chips
-            </label>
-          </RadioGroup>
-        </div>
-
-        {mode === 'amount' ? (
-          <Input
-            type="number"
-            inputMode="numeric"
-            step="1"
-            min="0"
-            placeholder="Amount (€)"
-            aria-label={`Final amount for ${player.name}`}
-            value={amount}
-            onChange={(e) => handleAmountChange(e.target.value)}
-          />
-        ) : (
-          <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-2 gap-2">
-              {CHIP_DEFS.map((chip) => (
-                <div key={chip.color} className="flex items-center gap-2">
-                  <ChipIcon chip={chip} />
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    step="1"
-                    min="0"
-                    aria-label={`${chip.label} chips for ${player.name}`}
-                    placeholder="0"
-                    className="w-16 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                    value={chips[chip.color] || ''}
-                    onChange={(e) =>
-                      handleChipChange(chip.color, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              = €{Math.round(chipsTotal)}
-            </div>
+            {diffLabel}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+        <div className="seg shrink-0">
+          <label className="seg-opt">
+            <input
+              type="radio"
+              name={radioName}
+              checked={mode === 'amount'}
+              onChange={() => handleModeChange('amount')}
+            />
+            Amount
+          </label>
+          <label className="seg-opt">
+            <input
+              type="radio"
+              name={radioName}
+              checked={mode === 'chips'}
+              onChange={() => handleModeChange('chips')}
+            />
+            Chips
+          </label>
+        </div>
+      </div>
+
+      {mode === 'amount' ? (
+        <input
+          className="input"
+          type="number"
+          inputMode="numeric"
+          step="1"
+          min="0"
+          placeholder="Amount (€)"
+          aria-label={`Final amount for ${player.name}`}
+          value={amount}
+          onChange={(e) => handleAmountChange(e.target.value)}
+        />
+      ) : (
+        <div className="flex flex-col gap-[var(--space-2)]">
+          <div className="grid grid-cols-2 gap-[var(--space-2)]">
+            {CHIP_DEFS.map((chip) => (
+              <div key={chip.color} className="flex items-center gap-2">
+                <ChipIcon chip={chip} />
+                <input
+                  className="input text-center"
+                  type="number"
+                  inputMode="numeric"
+                  step="1"
+                  min="0"
+                  aria-label={`${chip.label} chips for ${player.name}`}
+                  placeholder="0"
+                  style={{ width: 64, padding: '6px 4px' }}
+                  value={chips[chip.color] || ''}
+                  onChange={(e) => handleChipChange(chip.color, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="text-muted" style={{ fontSize: 13 }}>
+            = €{Math.round(chipsTotal)}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
