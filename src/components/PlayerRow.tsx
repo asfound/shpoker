@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import type { Player } from '@/types';
-import { TrashIcon } from '@/components/icons';
+import { ChevronDownIcon, TrashIcon } from '@/components/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -96,13 +96,20 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
         <div>
           <button
             type="button"
-            className="block cursor-pointer border-0 bg-transparent p-0 text-[var(--color-text)] opacity-60 hover:opacity-100"
+            className="flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 text-[var(--color-text)] opacity-60 hover:opacity-100"
             style={{ fontSize: 12, padding: '4px 0' }}
+            aria-expanded={isLogOpen}
             onClick={() => setIsLogOpen((v) => !v)}
           >
             {isLogOpen
               ? 'Buy-in log'
               : `Last: +€${Math.round(lastBuyIn.amount)} · ${formatTime(lastBuyIn.createdAt)}`}
+            <span
+              className="inline-flex transition-transform"
+              style={{ transform: isLogOpen ? 'rotate(180deg)' : 'none' }}
+            >
+              <ChevronDownIcon size={10} />
+            </span>
           </button>
           {isLogOpen && (
             <div className="flex flex-col gap-1 pt-0.5">
