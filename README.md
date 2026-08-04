@@ -20,6 +20,20 @@ npm install
 npm run dev
 ```
 
+## Deploy
+
+Hosted on GitHub Pages at the project path (`/shpoker/`, set as `base` in
+`vite.config.ts`), which is why routing uses `HashRouter` — Pages has no
+server-side rewrite support, so a plain `BrowserRouter` would 404 on
+deep-linking or refreshing `/game/:id`.
+
+```bash
+npm run deploy
+```
+
+Builds and pushes `dist/` to the `gh-pages` branch. First time: enable Pages
+in the repo's Settings → Pages, source set to the `gh-pages` branch.
+
 ## Scripts
 
 | Command | What it does |
@@ -30,6 +44,7 @@ npm run dev
 | `npm run test` | Run the Vitest suite once |
 | `npm run lint` | Run oxlint |
 | `npm run format` | Run Biome (formats + sorts imports) |
+| `npm run deploy` | Build and publish `dist/` to GitHub Pages |
 
 ## How the app is organized
 
