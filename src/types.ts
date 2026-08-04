@@ -16,14 +16,12 @@ export interface BuyIn {
   createdAt: number;
 }
 
-export type GameStatus = 'active' | 'settled';
-
 export interface Game {
   id: string;
   name: string;
   chipValue: number;
   defaultBuyIn: number;
-  status: GameStatus;
+  status: 'active' | 'settled';
   players: Player[];
   buyIns: BuyIn[];
   finalEntries: Record<string, FinalEntry>;
