@@ -350,3 +350,29 @@ input[type="number"]::-webkit-inner-spin-button {
   gap: 8px;
   margin-top: 4px;
 }
+
+/* Alert */
+.alert-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  border: 1px solid var(--color-accent-600);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+.alert-warning-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--color-accent-300);
+}
+.alert-warning-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.alert-warning-body {
+  font-size: 13px;
+  margin-top: 2px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}

@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { computeNet, computeTransfers } from '@/lib/settlement';
 import { PlayerSettleRow } from '@/components/PlayerSettleRow';
-import { BackIcon } from '@/components/icons';
+import { BackIcon, WarningIcon } from '@/components/icons';
 
 export default function SettleUp() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -58,18 +58,19 @@ export default function SettleUp() {
       </div>
 
       {potMismatch && (
-        <div
-          className="rounded-[var(--radius-md)] p-[var(--space-3)]"
-          style={{
-            border: '1px solid var(--color-divider)',
-            background: 'color-mix(in srgb, var(--color-text) 6%, transparent)',
-            fontSize: 13,
-            opacity: 0.85,
-          }}
-        >
-          Totals don't match the pot: entered stacks add up to €
-          {Math.round(pot + totalDiff)}, but the pot is €{Math.round(pot)}.
-          Double-check the final amounts.
+        <div className="alert-warning">
+          <span className="alert-warning-icon">
+            <WarningIcon />
+          </span>
+          <div>
+            <div className="alert-warning-title">
+              Totals don't match the pot
+            </div>
+            <div className="alert-warning-body">
+              Entered stacks add up to €{Math.round(pot + totalDiff)}, but the
+              pot is €{Math.round(pot)}. Double-check the final amounts.
+            </div>
+          </div>
         </div>
       )}
 

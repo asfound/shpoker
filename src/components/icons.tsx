@@ -35,6 +35,28 @@ export function ChevronDownIcon({ size = 12 }: { size?: number }) {
   );
 }
 
+export function WarningIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 3 2 20h20L12 3Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <rect
+        x="11.1"
+        y="9"
+        width="1.8"
+        height="6"
+        rx="0.9"
+        fill="currentColor"
+      />
+      <circle cx="12" cy="17.3" r="1.05" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function TrashIcon({ size = 15 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 256 256" fill="currentColor">
