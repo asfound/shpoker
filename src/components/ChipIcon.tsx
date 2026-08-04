@@ -4,7 +4,7 @@ interface ChipIconProps {
   chip: (typeof CHIP_DEFS)[number];
 }
 
-export function ChipIcon({ chip }: ChipIconProps) {
+export function ChipIcon({ chip }: Readonly<ChipIconProps>) {
   return (
     <span
       className="inline-flex shrink-0 items-center justify-center rounded-full"

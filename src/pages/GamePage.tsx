@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useGameStore } from '@/store/gameStore';
+import { findGame, useGameStore } from '@/store/gameStore';
 import { PlayerRow } from '@/components/PlayerRow';
 import { BackIcon } from '@/components/icons';
 
 export default function GamePage() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const game = useGameStore((s) => s.games.find((g) => g.id === gameId));
+  const game = useGameStore((s) => findGame(s.games, gameId));
   const addPlayer = useGameStore((s) => s.addPlayer);
 
   const [newPlayerName, setNewPlayerName] = useState('');
@@ -22,18 +22,18 @@ export default function GamePage() {
   }
 
   const totalPot = game.buyIns.reduce((sum, b) => sum + b.amount, 0);
-  const defaultBuyIn = game.defaultBuyIn ?? Math.round(game.chipValue * 100);
+  const activeGameId = game.id;
 
   function handleAddPlayer() {
     const trimmed = newPlayerName.trim();
     if (!trimmed) return;
-    addPlayer(game!.id, trimmed);
+    addPlayer(activeGameId, trimmed);
     setNewPlayerName('');
   }
 
   return (
     <>
-      <div className="flex items-start justify-between gap-[var(--space-3)]">
+      <div className="flex items-start justify-between gap-(--space-3)">
         <div>
           <Link to="/" className="back-link">
             <BackIcon />
@@ -66,7 +66,7 @@ export default function GamePage() {
         </div>
       </div>
 
-      <div className="flex gap-[var(--space-2)]">
+      <div className="flex gap-(--space-2)">
         <input
           className="input"
           placeholder="Player name"
@@ -84,13 +84,13 @@ export default function GamePage() {
         </button>
       </div>
 
-      <div className="flex flex-col gap-[var(--space-3)]">
+      <div className="flex flex-col gap-(--space-3)">
         {game.players.map((player) => (
           <PlayerRow
             key={player.id}
             gameId={game.id}
             player={player}
-            defaultBuyIn={defaultBuyIn}
+            defaultBuyIn={game.defaultBuyIn}
           />
         ))}
         {game.players.length === 0 && (

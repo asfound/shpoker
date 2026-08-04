@@ -19,7 +19,7 @@ function AlertDialogContent({ ...props }: AlertDialogPrimitive.Popup.Props) {
 }
 
 function AlertDialogHeader({ ...props }: React.ComponentProps<'div'>) {
-  return <div className="flex flex-col gap-[var(--space-2)]" {...props} />;
+  return <div className="flex flex-col gap-(--space-2)" {...props} />;
 }
 
 function AlertDialogFooter({ ...props }: React.ComponentProps<'div'>) {

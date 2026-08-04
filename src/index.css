@@ -299,9 +299,14 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .seg-opt input {
   position: absolute;
-  width: 0;
-  height: 0;
-  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .seg-opt:has(input:checked) {
   color: var(--color-accent);

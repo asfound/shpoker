@@ -13,6 +13,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+function formatDate(ms: number): string {
+  return new Date(ms).toLocaleDateString([], {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const games = useGameStore((s) => s.games);
@@ -26,25 +33,30 @@ export default function Home() {
 
   const pendingDeleteGame = games.find((g) => g.id === pendingDeleteId);
 
+  const trimmedName = name.trim();
+  const chipValueNumber = Number(chipValue);
+  const defaultBuyInNumber = Math.round(Number(defaultBuyIn));
+  const isValid =
+    trimmedName.length > 0 &&
+    Number.isFinite(chipValueNumber) &&
+    chipValueNumber > 0 &&
+    Number.isFinite(defaultBuyInNumber) &&
+    defaultBuyInNumber > 0;
+
   function handleConfirmDelete() {
     if (pendingDeleteId) deleteGame(pendingDeleteId);
     setPendingDeleteId(null);
   }
 
   function handleCreate() {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    const value = Number(chipValue);
-    if (!Number.isFinite(value) || value <= 0) return;
-    const buyIn = Math.round(Number(defaultBuyIn));
-    if (!Number.isFinite(buyIn) || buyIn <= 0) return;
-    const id = createGame(trimmed, value, buyIn);
+    if (!isValid) return;
+    const id = createGame(trimmedName, chipValueNumber, defaultBuyInNumber);
     navigate(`/game/${id}`);
   }
 
   return (
     <>
-      <div className="flex flex-col gap-[var(--space-2)]">
+      <div className="flex flex-col gap-(--space-2)">
         <div className="flex items-center gap-2.5">
           <span
             className="inline-flex items-center justify-center rounded-full"
@@ -64,7 +76,7 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="card elev-sm gap-[var(--space-3)] p-[var(--space-4)]">
+      <div className="card elev-sm gap-(--space-3) p-(--space-4)">
         <div className="card-kicker">New game</div>
         <div className="card-title">Start a session</div>
         <div className="field">
@@ -77,7 +89,7 @@ export default function Home() {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <div className="grid grid-cols-2 gap-[var(--space-3)]">
+        <div className="grid grid-cols-2 gap-(--space-3)">
           <div className="field">
             <label htmlFor="chip-value">Chip value (€)</label>
             <input
@@ -109,7 +121,7 @@ export default function Home() {
           type="button"
           className="btn btn-primary btn-block"
           onClick={handleCreate}
-          disabled={!name.trim()}
+          disabled={!isValid}
         >
           Start game
           <ArrowRightIcon />
@@ -117,7 +129,7 @@ export default function Home() {
       </div>
 
       {games.length > 0 && (
-        <div className="flex flex-col gap-[var(--space-2)]">
+        <div className="flex flex-col gap-(--space-2)">
           <h6>Games</h6>
           {games
             .slice()
@@ -125,16 +137,21 @@ export default function Home() {
             .map((game) => (
               <div
                 key={game.id}
-                className="flex items-center gap-[var(--space-2)] rounded-[var(--radius-md)] p-[var(--space-3)]"
+                className="flex items-center gap-(--space-2) rounded-(--radius-md) p-(--space-3)"
                 style={{ background: 'var(--color-surface)' }}
               >
                 <button
                   type="button"
                   onClick={() => navigate(`/game/${game.id}`)}
-                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-[var(--space-2)] border-0 bg-transparent p-0 text-left text-[var(--color-text)]"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-(--space-2) border-0 bg-transparent p-0 text-left text-(--color-text)"
                 >
-                  <span className="overflow-hidden text-ellipsis whitespace-nowrap font-medium">
-                    {game.name}
+                  <span className="min-w-0">
+                    <span className="block overflow-hidden text-ellipsis whitespace-nowrap font-medium">
+                      {game.name}
+                    </span>
+                    <span className="text-muted" style={{ fontSize: 11 }}>
+                      {formatDate(game.createdAt)}
+                    </span>
                   </span>
                   <span
                     className={

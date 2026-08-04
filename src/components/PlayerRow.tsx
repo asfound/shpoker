@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useGameStore } from '@/store/gameStore';
+import { findGame, useGameStore } from '@/store/gameStore';
+import { toNonNegativeInt } from '@/lib/number';
 import type { Player } from '@/types';
 import { ChevronDownIcon, TrashIcon } from '@/components/icons';
 import {
@@ -27,10 +28,12 @@ function formatTime(ms: number): string {
   });
 }
 
-export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
-  const gameBuyIns = useGameStore(
-    (s) => s.games.find((g) => g.id === gameId)?.buyIns,
-  );
+export function PlayerRow({
+  gameId,
+  player,
+  defaultBuyIn,
+}: Readonly<PlayerRowProps>) {
+  const gameBuyIns = useGameStore((s) => findGame(s.games, gameId)?.buyIns);
   const buyIns = useMemo(
     () => gameBuyIns?.filter((b) => b.playerId === player.id) ?? [],
     [gameBuyIns, player.id],
@@ -42,7 +45,7 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  const numericAmount = Number(amount) || 0;
+  const numericAmount = toNonNegativeInt(amount);
   const total = buyIns.reduce((sum, b) => sum + b.amount, 0);
   const lastBuyIn = buyIns[buyIns.length - 1];
   const recentFirst = useMemo(() => [...buyIns].reverse(), [buyIns]);
@@ -58,8 +61,8 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
   }
 
   return (
-    <div className="card elev-sm gap-[var(--space-2)] p-[var(--space-3)]">
-      <div className="flex items-center justify-between gap-[var(--space-3)]">
+    <div className="card elev-sm gap-(--space-2) p-(--space-3)">
+      <div className="flex items-center justify-between gap-(--space-3)">
         <div className="min-w-0">
           <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium">
             {player.name}
@@ -96,7 +99,7 @@ export function PlayerRow({ gameId, player, defaultBuyIn }: PlayerRowProps) {
         <div>
           <button
             type="button"
-            className="flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 text-[var(--color-text)] opacity-60 hover:opacity-100"
+            className="flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 text-(--color-text) opacity-60 hover:opacity-100"
             style={{ fontSize: 12, padding: '4px 0' }}
             aria-expanded={isLogOpen}
             onClick={() => setIsLogOpen((v) => !v)}

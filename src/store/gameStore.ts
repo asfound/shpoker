@@ -6,16 +6,22 @@ function makeId(): string {
   return crypto.randomUUID();
 }
 
+const MAX_GAMES = 10;
+
+export function findGame(
+  games: Game[],
+  gameId: string | undefined,
+): Game | undefined {
+  return games.find((g) => g.id === gameId);
+}
+
 interface GameStore {
   games: Game[];
-  activeGameId: string | null;
 
   createGame: (name: string, chipValue: number, defaultBuyIn: number) => string;
   deleteGame: (gameId: string) => void;
-  setActiveGame: (gameId: string | null) => void;
 
   addPlayer: (gameId: string, name: string) => void;
-  removePlayer: (gameId: string, playerId: string) => void;
 
   addBuyIn: (gameId: string, playerId: string, amount: number) => void;
   removeBuyIn: (gameId: string, buyInId: string) => void;
@@ -28,7 +34,6 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set) => ({
       games: [],
-      activeGameId: null,
 
       createGame: (name, chipValue, defaultBuyIn) => {
         const id = makeId();
@@ -43,37 +48,24 @@ export const useGameStore = create<GameStore>()(
           finalEntries: {},
           createdAt: Date.now(),
         };
-        set((state) => ({ games: [...state.games, game], activeGameId: id }));
+        set((state) => ({
+          games: [...state.games, game]
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .slice(0, MAX_GAMES),
+        }));
         return id;
       },
 
       deleteGame: (gameId) =>
         set((state) => ({
           games: state.games.filter((g) => g.id !== gameId),
-          activeGameId:
-            state.activeGameId === gameId ? null : state.activeGameId,
         })),
-
-      setActiveGame: (gameId) => set({ activeGameId: gameId }),
 
       addPlayer: (gameId, name) =>
         set((state) => ({
           games: state.games.map((g) =>
             g.id === gameId
               ? { ...g, players: [...g.players, { id: makeId(), name }] }
-              : g,
-          ),
-        })),
-
-      removePlayer: (gameId, playerId) =>
-        set((state) => ({
-          games: state.games.map((g) =>
-            g.id === gameId
-              ? {
-                  ...g,
-                  players: g.players.filter((p) => p.id !== playerId),
-                  buyIns: g.buyIns.filter((b) => b.playerId !== playerId),
-                }
               : g,
           ),
         })),
@@ -121,6 +113,19 @@ export const useGameStore = create<GameStore>()(
           ),
         })),
     }),
-    { name: 'shpoker-storage' },
+    {
+      name: 'shpoker-storage',
+      version: 1,
+      migrate: (persistedState, version) => {
+        const state = persistedState as { games: Game[] };
+        if (version < 1) {
+          state.games = state.games.map((g) => ({
+            ...g,
+            defaultBuyIn: g.defaultBuyIn ?? Math.round(g.chipValue * 100),
+          }));
+        }
+        return state;
+      },
+    },
   ),
 );

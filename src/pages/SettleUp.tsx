@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useGameStore } from '@/store/gameStore';
+import { findGame, useGameStore } from '@/store/gameStore';
 import { computeNet, computeTransfers } from '@/lib/settlement';
 import { PlayerSettleRow } from '@/components/PlayerSettleRow';
 import { BackIcon, WarningIcon } from '@/components/icons';
@@ -8,7 +8,7 @@ import { BackIcon, WarningIcon } from '@/components/icons';
 export default function SettleUp() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const game = useGameStore((s) => s.games.find((g) => g.id === gameId));
+  const game = useGameStore((s) => findGame(s.games, gameId));
   const settleGame = useGameStore((s) => s.settleGame);
 
   const net = useMemo(() => (game ? computeNet(game) : {}), [game]);
@@ -33,9 +33,10 @@ export default function SettleUp() {
   const pot = game.buyIns.reduce((sum, b) => sum + b.amount, 0);
   const totalDiff = Object.values(net).reduce((sum, n) => sum + n, 0);
   const potMismatch = allEntered && Math.abs(totalDiff) > 0.5;
+  const activeGameId = game.id;
 
   function handleSettle() {
-    settleGame(game!.id);
+    settleGame(activeGameId);
     navigate('/');
   }
 
@@ -51,7 +52,7 @@ export default function SettleUp() {
         </h1>
       </div>
 
-      <div className="flex flex-col gap-[var(--space-3)]">
+      <div className="flex flex-col gap-(--space-3)">
         {game.players.map((player) => (
           <PlayerSettleRow key={player.id} gameId={game.id} player={player} />
         ))}
@@ -75,16 +76,16 @@ export default function SettleUp() {
       )}
 
       {allEntered && (
-        <div className="card gap-[var(--space-2)] p-[var(--space-4)]">
+        <div className="card gap-(--space-2) p-(--space-4)">
           <h5>Who owes who</h5>
           {transfers.length === 0 && (
             <p className="text-muted" style={{ fontSize: 13 }}>
               Everyone's even.
             </p>
           )}
-          {transfers.map((t, i) => (
+          {transfers.map((t) => (
             <div
-              key={i}
+              key={`${t.fromPlayerId}-${t.toPlayerId}`}
               className="flex items-center justify-between"
               style={{ fontSize: 14 }}
             >

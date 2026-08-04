@@ -30,11 +30,6 @@ export interface Game {
   createdAt: number;
 }
 
-export interface Settlement {
-  playerId: string;
-  amount: number;
-}
-
 export interface Transfer {
   fromPlayerId: string;
   toPlayerId: string;
